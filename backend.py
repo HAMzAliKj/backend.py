@@ -8,7 +8,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", api_key='AIzaSyBT7otzDr-MQ8ZS1JCP4Q0hTxnKHQ2ZDf0')
 
 @app.route("/transcript", methods=["GET"])
 def get_transcript():
