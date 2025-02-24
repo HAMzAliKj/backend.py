@@ -1,7 +1,6 @@
 from flask import Flask,  request, jsonify
 from youtube_transcript_api import YouTubeTranscriptApi as yt
 from youtube_transcript_api._errors import NoTranscriptFound
-from langchain_google_genai import ChatGoogleGenerativeAI
 from flask_cors import CORS
 from youtube_transcript_api._errors import NoTranscriptFound, TranscriptsDisabled
 import os
@@ -25,17 +24,22 @@ def get_transcript():
             if generated_transcripts:
                 transcript = generated_transcripts[0]
         
-
-        new = llm.invoke(f"You just give me video language just like hi or en no other thing {transcript}")
-        # print(new.content)
-        text = yt.get_transcript(video_id=video_id,languages=[new.content])
+        
+        language_code = transcript.language_code  # Get the exact language code (e.g., 'hi', 'en')
+        text = yt.get_transcript(video_id=video_id, languages=[language_code])
         return text
+        # new = llm.invoke(f"You just give me video language just like hi or en no other thing {transcript}")
+        # # print(new.content)
+        # text = yt.get_transcript(video_id=video_id,languages=[new.content])
+        # return text
     except NoTranscriptFound:
         return jsonify({"error": "No subtitles found for this video"}), 404
     except TranscriptsDisabled:
         return jsonify({"error": "Subtitles are disabled for this video"}), 403
     except Exception as e:
         return jsonify({"error": str(e)})
+    
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
